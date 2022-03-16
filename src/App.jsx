@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import AllPokemons from "./components/AllPokemons";
+import { AppStyles } from "./appStyles";
 
 function App() {
   const [pokemonData, setPokemonData] = useState([]);
@@ -10,27 +12,30 @@ function App() {
       .then(response => response.data.results);
 
     res.map(async pokemon => {
-      const res = await axios
+      let res = [];
+      res = await axios
         .get(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`)
         .then(response => response.data);
-      setPokemonData(res);
+      setPokemonData(current => [...current, res]);
     });
   }
-
-  console.log(pokemonData);
 
   useEffect(() => {
     createPokemon();
   }, []);
 
   return (
-    <div>
-      {/* {pokemonData.map(pokemon => {
-        <li key={pokemon.id}>
-          <h1>{pokemon.name}</h1>
-        </li>;
-      })} */}
-    </div>
+    <AppStyles>
+      {pokemonData.map((pokemon, index) => (
+        <AllPokemons
+          id={pokemon.id}
+          name={pokemon.name}
+          type={pokemon.types[0].type.name}
+          image={pokemon.sprites.other.dream_world.front_default}
+          key={index}
+        />
+      ))}
+    </AppStyles>
   );
 }
 
